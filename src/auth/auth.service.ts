@@ -36,11 +36,10 @@ export class AuthService {
 
   async login(dto: LoginDto, res: Response) {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-    if (!user) throw new UnauthorizedException('Credenciales incorrectas');
+    if (!user){console.log("falllot2"); throw new UnauthorizedException('Credenciales incorrectas');} 
 
     const passwordMatch = await bcrypt.compare(dto.password, user.password);
-    if (!passwordMatch) throw new UnauthorizedException('Credenciales incorrectas');
-
+    if (!passwordMatch){console.log("falllot"); throw new UnauthorizedException('Credenciales incorrectas');} 
     return this.generateTokens(user, res);
   }
 
@@ -91,15 +90,15 @@ export class AuthService {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'development',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'development',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
